@@ -23,7 +23,7 @@ The repository contains the code, input data and results of my master's thesis a
 
 > This is retrospective research, not an investment recommendation or a live trading system. Portfolio weights are estimated using the full historical sample, so the forecasting exercise is not an end-to-end out-of-sample test of portfolio construction.
 >
-> Numerical results below are carried over from the existing research documentation; they were not recomputed as part of this English documentation update. See the notebook and exported tables for the implementation and underlying outputs.
+> Numerical results below are carried over from the existing research documentation; they were not recomputed as part of this bilingual documentation update. See the notebook and exported tables for the implementation and underlying outputs.
 
 ## Research design
 
