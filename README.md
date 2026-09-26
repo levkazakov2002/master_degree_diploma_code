@@ -1,238 +1,266 @@
-# Использование математических методов для оптимизации всепогодного портфеля
+# All-Weather Portfolio Optimisation
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20232640.svg)](https://doi.org/10.5281/zenodo.20232640)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
 
-Исходный код, данные и результаты вычислительных экспериментов по многокритериальной оптимизации всепогодного портфеля на российском финансовом рынке.
+**English** | [Русский](README.ru.md)
 
-Репозиторий содержит материалы магистерской диссертации и последующего исследования, подготовленного для научной публикации.
+A Python research project exploring how the allocation of an all-weather portfolio changes across risk-return objectives, asset universes and historical windows. The empirical study uses Russian equity and bond indices and gold, with data spanning **14 January 2015 to 30 December 2025**.
 
-**Автор:** Казаков Лев Константинович
-**Научный руководитель:** к. э. н., доцент А. О. Солдатова
+The repository contains the code, input data and results of my master's thesis and subsequent research prepared for a scientific publication.
 
-> Все числа в этом файле воспроизводятся запуском `main_code.ipynb` сверху вниз и приведены с той точностью, с которой их печатает ноутбук.
+**Author:** Lev Kazakov  
+**Academic supervisor:** A. O. Soldatova, Candidate of Economic Sciences, Associate Professor
 
-## О проекте
+## Project at a glance
 
-В исследовании рассматривается стратегическая структура всепогодного портфеля, включающего индексы акций Московской биржи, короткие и длинные ОФЗ, а также золото.
+- **Question:** How sensitive are portfolio allocations to the choice of optimisation criterion, time window and asset universe?
+- **Implementation:** Market-data preparation, constrained portfolio optimisation, benchmark comparisons, sensitivity analysis and econometric analysis in Python.
+- **Main output:** Empirical allocation ranges rather than a single supposedly optimal portfolio.
+- **Tools:** pandas, NumPy, SciPy, statsmodels, Matplotlib, seaborn and notebook-based tests.
+- **Start here:** [Main notebook](main_code.ipynb) · [Installation and execution](#getting-started) · [Limitations](#limitations)
 
-Используется стратегия buy-and-hold:
+> This is retrospective research, not an investment recommendation or a live trading system. Portfolio weights are estimated using the full historical sample, so the forecasting exercise is not an end-to-end out-of-sample test of portfolio construction.
+>
+> Numerical results below are carried over from the existing research documentation; they were not recomputed as part of this English documentation update. See the notebook and exported tables for the implementation and underlying outputs.
 
-- начальные веса активов определяются методом многокритериальной оптимизации;
-- после формирования портфеля ребалансировка не проводится;
-- доходность рассчитывается с учетом изменения фактических долей активов;
-- безрисковая ставка — среднее дневных значений бескупонной кривой доходности ОФЗ на сегменте 1Y за весь период: **9,57 %**;
-- MAR задан как средняя инфляция за период (7,33 %) плюс реальная премия 3 п. п., с учетом сложного процента: **10,55 %**;
-- при агрегировании результатов используется одинаковый вес групп «метрика × конфигурация».
+## Research design
 
-Период данных — **14 января 2015 г. — 30 декабря 2025 г.** (2062–2063 торговых дня в зависимости от спецификации).
+The study compares four asset universes combining Moscow Exchange equity indices, bond indices (including Russian federal government bonds, or **OFZ**) and gold.
 
-### Сетка оптимизации
+The main portfolio assumption is **buy-and-hold**:
 
-Для каждой из **восьми** метрик качества проходится сетка из **27 комбинаций** параметров: длина окна (2, 3, 4 года) × шаг сдвига (2, 3, 6 месяцев) × сила тихоновской регуляризации (0; 0,05; 0,10). Ограничение на вес актива — не более 60 %, длинные позиции.
+- Initial asset weights are obtained from the optimisation procedure.
+- No rebalancing takes place after portfolio formation.
+- Portfolio returns account for the subsequent drift in asset weights.
+- The baseline risk-free rate is the full-sample mean of daily one-year OFZ zero-coupon yields: **9.57%**.
+- The minimum acceptable return (**MAR**) combines average inflation of 7.33% with a 3-percentage-point real premium using compounding: **10.55%**.
+- Each metric–configuration group receives equal weight when results are aggregated.
 
-Метрики: коэффициент Шарпа, коэффициент Сортино, коэффициент Кальмара, CVaR ratio (α = 0,05), Martin ratio, коэффициент Омега, волатильность, максимальная просадка.
+The aligned datasets contain **2,062–2,063 trading-day observations**, depending on the asset universe.
 
-Результат оптимизации — не точечные веса, а **эмпирические диапазоны** (границы P10/P90), агрегированные по 216 группам «метрика × конфигурация».
+### Optimisation grid
 
-## Основные результаты
+Each of **eight objectives** is evaluated over **27 configurations**:
 
-### Спецификации
-
-| № | Состав активов | Наблюдений |
-|---|---|---|
-| 1 | MCFTR, RUABITR, GLDRUB_TOM | 2062 |
-| 2 | MCFTR, RGBITR, GLDRUB_TOM | 2063 |
-| 3 | MCFTR, RUGBITR3Y, RUGBITR10Y, GLDRUB_TOM | 2063 |
-| 4 | MEBCTR, RUGBITR3Y, RUGBITR10Y, GLDRUB_TOM | 2062 |
-
-### Медианные веса
-
-| Спецификация | Акции | Кратк. ОФЗ | Длин. ОФЗ | Золото |
-|---|---|---|---|---|
-| Спец. 1 | 18,69 % | 52,13 % (RUABITR) | — | 29,19 % |
-| Спец. 2 | 19,79 % | 50,98 % (RGBITR) | — | 29,23 % |
-| **Спец. 3** | **10,41 %** | **54,07 %** | **13,35 %** | **22,17 %** |
-| Спец. 4 | 9,21 % (MEBCTR) | 55,07 % | 13,52 % | 22,20 % |
-
-Доля золота во всех спецификациях устойчиво превышает 15 % — стратегический ориентир исходного портфеля Bridgewater.
-
-### Метрики на медианных весах
-
-| Портфель | CAGR, % | Волат., % | Шарп | Сортино | Кальмар | MDD, % |
-|---|---|---|---|---|---|---|
-| Спец. 1 | 15,84 | 10,59 | 0,540 | 0,596 | 0,671 | 23,61 |
-| Спец. 2 | 16,29 | 11,17 | 0,552 | 0,618 | 0,673 | 24,22 |
-| **Спец. 3** | **14,85** | **8,41** | **0,552** | **0,591** | **0,896** | **16,58** |
-| **Спец. 4** | **14,82** | **8,11** | **0,566** | **0,605** | **0,926** | **16,02** |
-| Равновзвешенный (сетка Спец. 3) | 15,77 | 12,09 | 0,483 | 0,530 | 0,576 | 27,41 |
-| Далио оригинал (сетка Спец. 3) | 15,27 | 13,53 | 0,414 | 0,439 | 0,457 | 33,44 |
-| 60/40 (MCFTR/RGBITR) | 11,98 | 17,25 | 0,192 | 0,173 | 0,270 | 44,41 |
-| 100 % акции (MCFTR) | 17,40 | 26,61 | 0,383 | 0,462 | 0,328 | 53,05 |
-| 100 % золото | 19,59 | 24,48 | 0,462 | 0,622 | 0,391 | 50,09 |
-
-Переход от трехактивных спецификаций к четырехактивным снижает максимальную просадку с 23,6–24,2 до 16,0–16,6 % и повышает коэффициент Кальмара с 0,67 до 0,90–0,93 при практически неизменной среднегодовой доходности.
-
-### Ширина диапазонов весов
-
-| Спецификация | Средняя ширина диапазона, п. п. |
+| Parameter | Values |
 |---|---|
-| Спец. 1 | 56,05 |
-| Спец. 2 | 55,05 |
-| Спец. 3 | 52,25 |
-| Спец. 4 | 51,98 |
+| Historical window | 2, 3 or 4 years |
+| Window shift | 2, 3 or 6 months |
+| Tikhonov regularisation strength | 0, 0.05 or 0.10 |
+| Portfolio constraints | Long-only; maximum 60% per asset |
 
-Ширина 52–56 п. п. — не погрешность расчета, а эмпирическая оценка чувствительности решения к выбору критерия и подпериода.
+The objectives are the Sharpe ratio, Sortino ratio, Calmar ratio, CVaR ratio (α = 0.05), Martin ratio, Omega ratio, volatility and maximum drawdown.
 
-### Устойчивость к составу метрик
+The optimisation results are summarised as **empirical allocation ranges (P10–P90)** across **216 metric–configuration groups**. These are sensitivity ranges, not statistical confidence intervals or recommended trading weights.
 
-Диапазоны пересчитаны на сокращенных наборах из 7 метрик (без MDD) и 5 метрик (узкий). Максимальный сдвиг любой границы диапазона — **3,70 п. п.**; максимальный сдвиг медианного веса — 15,59 п. п. (Спец. 1, узкий набор). Размах метрик Спец. 3 между наборами: Шарп 0,008, Сортино 0,051, Кальмар 0,180, MDD 5,895 п. п.
+## Portfolio results
 
-### Устойчивость ранжирования
+### Asset universes
 
-Ранжирование спецификаций между собой **неустойчиво** и не является результатом работы. Блочный бутстрап (1000 повторов, блок 63 дня) дает вероятность сохранения лидера 35,0 % по итоговой доходности, 36,4 % по Сортино и 47,0 % по CVaR ratio; средняя ранговая корреляция 0,20–0,60. Джекнайф по годам, напротив, устойчив: по MDD и по Кальмару порядок спецификаций меняется только при исключении 2022 года.
+| Specification | Asset series | Observations |
+|---|---|---|
+| 1 | MCFTR, RUABITR, GLDRUB_TOM | 2,062 |
+| 2 | MCFTR, RGBITR, GLDRUB_TOM | 2,063 |
+| 3 | MCFTR, RUGBITR3Y, RUGBITR10Y, GLDRUB_TOM | 2,063 |
+| 4 | MEBCTR, RUGBITR3Y, RUGBITR10Y, GLDRUB_TOM | 2,062 |
 
-Практический вывод: спецификации 3 и 4 близки между собой, и выбор между ними по историческим метрикам не обоснован. Отличие от трехактивных вариантов и от бенчмарков при этом сохраняется.
+### Median allocations
 
-## Регрессионный анализ
+| Specification | Equities | Bonds / shorter-maturity OFZ | Longer-maturity OFZ | Gold |
+|---|---|---|---|---|
+| 1 | 18.69% | 52.13% (RUABITR) | — | 29.19% |
+| 2 | 19.79% | 50.98% (RGBITR) | — | 29.23% |
+| 3 | 10.41% | 54.07% (RUGBITR3Y) | 13.35% | 22.17% |
+| 4 | 9.21% (MEBCTR) | 55.07% (RUGBITR3Y) | 13.52% | 22.20% |
 
-Зависимая переменная — месячная логарифмическая доходность того же buy-and-hold портфеля Спец. 3 на медианных весах. Оценивание — МНК с состоятельными при гетероскедастичности и автокорреляции (HAC) стандартными ошибками.
+The median gold allocation exceeds the 15% reference allocation used for the original all-weather benchmark in each specification.
 
-### Заранее заданные теоретические спецификации
+### Historical performance at median initial weights
 
-| Модель | Добавленный блок | K | R² | Adj. R² | BIC | HAC-Wald p |
+| Portfolio | CAGR, % | Volatility, % | Sharpe | Sortino | Calmar | Max. drawdown, % |
 |---|---|---|---|---|---|---|
-| M1 Market | MOEXBMI | 2 | 0,4322 | 0,4273 | −691,98 | — |
-| M2 + FX | EUR_RUB | 3 | 0,5412 | 0,5333 | −712,77 | 0,0003 |
-| M3 + Rates | yield_spread | 4 | 0,5751 | 0,5641 | −717,21 | 0,0175 |
-| **M4 + Activity** | **org_turnover** | **5** | **0,6055** | **0,5918** | **−721,32** | **0,0001** |
-| M5 + Trade | import_value | 6 | 0,6091 | 0,5919 | −717,63 | 0,1640 |
+| Specification 1 | 15.84 | 10.59 | 0.540 | 0.596 | 0.671 | 23.61 |
+| Specification 2 | 16.29 | 11.17 | 0.552 | 0.618 | 0.673 | 24.22 |
+| Specification 3 | 14.85 | 8.41 | 0.552 | 0.591 | 0.896 | 16.58 |
+| Specification 4 | 14.82 | 8.11 | 0.566 | 0.605 | 0.926 | 16.02 |
+| Equal-weighted (Specification 3 universe) | 15.77 | 12.09 | 0.483 | 0.530 | 0.576 | 27.41 |
+| Original Dalio allocation (Specification 3 universe) | 15.27 | 13.53 | 0.414 | 0.439 | 0.457 | 33.44 |
+| 60/40 (MCFTR/RGBITR) | 11.98 | 17.25 | 0.192 | 0.173 | 0.270 | 44.41 |
+| 100% equities (MCFTR) | 17.40 | 26.61 | 0.383 | 0.462 | 0.328 | 53.05 |
+| 100% gold | 19.59 | 24.48 | 0.462 | 0.622 | 0.391 | 50.09 |
 
-**Основная модель — M4** (N = 120): MOEXBMI, EUR/RUB, спред доходностей 10Y−1Y, оборот организаций. Импорт (M5) незначим и модель не улучшает.
+CAGR is the compound annual growth rate. Maximum drawdown is shown as a positive loss magnitude.
 
-### Коэффициенты основной модели
+In this sample, the four-asset specifications have lower maximum drawdowns (16.0–16.6%, compared with 23.6–24.2% for the three-asset variants) and higher Calmar ratios. Their CAGR is also lower; these results do not establish universal superiority or future performance.
 
-| Переменная | β | HAC SE | p | Станд. β |
+### Allocation sensitivity
+
+| Specification | Average P10–P90 range width, percentage points |
+|---|---|
+| 1 | 56.05 |
+| 2 | 55.05 |
+| 3 | 52.25 |
+| 4 | 51.98 |
+
+The wide ranges reflect sensitivity to the objective and historical subperiod, not numerical rounding error.
+
+Recalculating the ranges using reduced sets of seven objectives (excluding maximum drawdown) and five objectives gives a maximum boundary shift of **3.70 percentage points**. Median weights are more sensitive: the largest shift is **15.59 percentage points** for Specification 1 under the narrow objective set.
+
+For Specification 3, the spreads across objective sets are 0.008 for Sharpe, 0.051 for Sortino, 0.180 for Calmar and 5.895 percentage points for maximum drawdown.
+
+### Ranking stability
+
+**The ranking of the specifications is not robust and is not presented as a principal finding.**
+
+A block bootstrap with 1,000 replications and 63-day blocks retains the leading specification in 35.0% of replications for terminal return, 36.4% for Sortino and 47.0% for the CVaR ratio. Mean rank correlations range from 0.20 to 0.60.
+
+The leave-one-year-out check is more stable: the ordering by maximum drawdown and Calmar changes only when 2022 is excluded.
+
+Specifications 3 and 4 are close enough that their historical metrics do not justify a firm preference between them.
+
+## Regression analysis
+
+The dependent variable is the **monthly log return of the same buy-and-hold portfolio for Specification 3**, initialised at median weights. Models are estimated by ordinary least squares with **heteroskedasticity- and autocorrelation-consistent (HAC) standard errors**.
+
+### Theory-driven model comparison
+
+| Model | Added variable | Parameters | R² | Adjusted R² | BIC | HAC-Wald p |
+|---|---|---|---|---|---|---|
+| M1 Market | MOEXBMI | 2 | 0.4322 | 0.4273 | −691.98 | — |
+| M2 + FX | EUR_RUB | 3 | 0.5412 | 0.5333 | −712.77 | 0.0003 |
+| M3 + Rates | yield_spread | 4 | 0.5751 | 0.5641 | −717.21 | 0.0175 |
+| M4 + Activity | org_turnover | 5 | 0.6055 | 0.5918 | −721.32 | 0.0001 |
+| M5 + Trade | import_value | 6 | 0.6091 | 0.5919 | −717.63 | 0.1640 |
+
+The primary model is **M4 (N = 120)**: MOEXBMI, EUR/RUB, the 10Y–1Y yield spread and organisational turnover. Adding imports in M5 does not significantly improve the model.
+
+### Primary-model coefficients
+
+| Variable | Coefficient | HAC SE | p | Standardised coefficient |
 |---|---|---|---|---|
-| const | 0,00990 | 0,00158 | 0,0000 | — |
-| MOEXBMI | 0,19663 | 0,02999 | 0,0000 | 0,704 |
-| EUR_RUB | 0,09772 | 0,02607 | 0,0002 | 0,318 |
-| yield_spread | 0,00363 | 0,00176 | 0,0390 | 0,144 |
-| org_turnover | −0,02906 | 0,00726 | 0,0001 | −0,181 |
+| const | 0.00990 | 0.00158 | 0.0000 | — |
+| MOEXBMI | 0.19663 | 0.02999 | 0.0000 | 0.704 |
+| EUR_RUB | 0.09772 | 0.02607 | 0.0002 | 0.318 |
+| yield_spread | 0.00363 | 0.00176 | 0.0390 | 0.144 |
+| org_turnover | −0.02906 | 0.00726 | 0.0001 | −0.181 |
 
-Коэффициенты описывают историческую условную ассоциацию, а не причинный эффект.
+These coefficients describe conditional historical associations, not causal effects. Values displayed as p = 0.0000 are rounded, not exactly zero.
 
-### Диагностика: результаты приводятся полностью
+### Diagnostics
 
-| Тест | Статистика | p | H₀ при α = 0,05 |
+| Test | Statistic | p | Null hypothesis at α = 0.05 |
 |---|---|---|---|
-| Ljung–Box(12) | 19,755 | 0,0719 | не отвергается |
-| Jarque–Bera | 1,117 | 0,5720 | не отвергается |
-| Breusch–Pagan | 12,092 | 0,0167 | **отвергается** |
-| White | 45,837 | 0,0000 | **отвергается** |
-| Ramsey RESET | 6,540 | 0,0119 | **отвергается** |
-| CUSUM | 1,466 | 0,0272 | **отвергается** |
+| Ljung–Box(12) | 19.755 | 0.0719 | Not rejected |
+| Jarque–Bera | 1.117 | 0.5720 | Not rejected |
+| Breusch–Pagan | 12.092 | 0.0167 | Rejected |
+| White | 45.837 | 0.0000 | Rejected |
+| Ramsey RESET | 6.540 | 0.0119 | Rejected |
+| CUSUM | 1.466 | 0.0272 | Rejected |
 
-Гетероскедастичность (Breusch–Pagan, White) учтена самой процедурой оценивания стандартных ошибок. Отвергнутые RESET и CUSUM указывают на возможную нелинейность формы и нестабильность параметров и фиксируются как ограничение спецификации.
+HAC standard errors address heteroskedasticity and autocorrelation in inference. They do not resolve the possible functional-form misspecification and parameter instability indicated by RESET and CUSUM; these remain limitations.
 
-### Скользящая регрессия
+### Rolling regression
 
-Окно — 60 месяцев, всего 61 окно.
+The analysis uses **61 rolling windows of 60 months**.
 
-| Переменная | Коэф. полной выборки | Медиана по окнам | Стабильность знака | Доля p < 0,05 |
+| Variable | Full-sample coefficient | Median across windows | Sign stability | Share with p < 0.05 |
 |---|---|---|---|---|
-| MOEXBMI | 0,1966 | 0,2214 | 100 % | 100 % |
-| EUR_RUB | 0,0977 | 0,1038 | 100 % | 96,7 % |
-| yield_spread | 0,0036 | 0,0031 | **72,1 %** | **47,5 %** |
-| org_turnover | −0,0291 | −0,0238 | 100 % | 93,4 % |
+| MOEXBMI | 0.1966 | 0.2214 | 100% | 100% |
+| EUR_RUB | 0.0977 | 0.1038 | 100% | 96.7% |
+| yield_spread | 0.0036 | 0.0031 | 72.1% | 47.5% |
+| org_turnover | −0.0291 | −0.0238 | 100% | 93.4% |
 
-Спред доходностей — наименее устойчивый фактор модели.
+The yield spread is the least stable factor in the model.
 
-### Псевдовневыборочная проверка
+### Pseudo-out-of-sample forecasting
 
-Expanding window, минимум 60 месяцев обучения, 58 прогнозов, лаги доступности данных (рынок, FX, спред — 1 месяц; оборот и импорт — 2 месяца).
+The expanding-window exercise uses at least 60 months of training data and produces 58 forecasts. Data-availability lags are one month for the market, FX and yield-spread variables, and two months for turnover and imports.
 
-| Модель | MAE | RMSE | OOS R² к expanding-среднему | Directional accuracy |
+| Model | MAE | RMSE | OOS R² vs expanding mean | Directional accuracy |
 |---|---|---|---|---|
-| Market lag 1 | 0,01633 | 0,02241 | −0,013 | 68,97 % |
-| Primary M4 | 0,01545 | 0,02125 | **0,089** | 60,34 % |
-| Extended M5 | 0,01557 | 0,02137 | 0,079 | 60,34 % |
+| Market lag 1 | 0.01633 | 0.02241 | −0.013 | 68.97% |
+| Primary M4 | 0.01545 | 0.02125 | 0.089 | 60.34% |
+| Extended M5 | 0.01557 | 0.02137 | 0.079 | 60.34% |
 
-Тест Кларка — Уэста: M4 превосходит expanding-среднее (p = 0,0009) и модель только с рынком (p = 0,0037); M5 не превосходит M4 (p = 0,80).
+The reported Clark–West tests favour M4 over the expanding-mean benchmark (p = 0.0009) and the market-only model (p = 0.0037). M5 does not improve on M4 (p = 0.80).
 
-Оговорка: веса портфеля оценены на полной истории, поэтому проверка не является полностью вневыборочной по конструкции портфеля.
+**Caveat:** The portfolio weights were estimated on the full historical sample. This exercise evaluates forecasting conditional on that portfolio, not a fully out-of-sample investment process.
 
-### Эффект дрейфа весов
+### Weight drift and rebalancing
 
-Та же спецификация на гипотетическом портфеле с ежемесячной ребалансировкой дает R² = 0,5450 против 0,6055 у buy-and-hold. Среднегодовая разность лог-доходностей (buy-and-hold минус ребалансировка) — −0,0058.
+For a hypothetical monthly-rebalanced portfolio, the same regression specification gives R² = 0.5450, versus 0.6055 for buy-and-hold. The annualised difference in log returns (buy-and-hold minus monthly rebalancing) is −0.0058.
 
-## Проверки чувствительности
+Detailed outputs are available in [tables/regression](tables/regression).
 
-**Безрисковая ставка.** Метрики пересчитаны при ZCYC 1Y (9,57 %), 3Y, 10Y, 20Y и RUONIA (10,32 %). Шарп Спец. 3 меняется в пределах 0,462–0,552; ранжирование спецификаций при смене ставки не полностью устойчиво, однако максимальный разброс между спецификациями при фиксированной ставке составляет 0,027 — перестановки отражают близость спецификаций, а не содержательное расхождение. Сортино и остальные метрики, не зависящие от ставки, ранжирование сохраняют.
+## Additional sensitivity checks
 
-**MOEXALLW как бенчмарк, а не цель репликации.** Общий период с индексом — всего 161 наблюдение (13 марта — 30 декабря 2025 г.), поэтому годовые метрики на нем не характеризуют долгосрочную доходность. Содержательны только соотносительные показатели: корреляция 0,424, beta 0,340, tracking error 9,89 %.
+- **Risk-free rate:** Metrics are recalculated using mean 1Y OFZ zero-coupon yields (9.57%), 3Y, 10Y and 20Y yields, and RUONIA (10.32%). Specification 3's Sharpe ratio ranges from 0.462 to 0.552. Rankings are not fully stable, but the largest cross-specification Sharpe spread at a fixed rate is only 0.027. Rankings for Sortino and other rate-independent metrics are unchanged.
+- **MOEXALLW benchmark:** This index is a comparison benchmark, not a replication target. The common sample has only 161 observations (13 March–30 December 2025), so annualised metrics do not establish long-term performance. Reported relative measures are correlation 0.424, beta 0.340 and tracking error 9.89%.
+- **Optimiser:** The research documentation reports that multi-start SLSQP solutions were checked against differential evolution across all specifications, with discrepancies within tolerance.
 
-**Оптимизатор.** Решения SLSQP с мультистартом сверены с differential evolution по всем спецификациям; расхождения в пределах допуска.
+### Asset correlations for Specification 3
 
-## Корреляционная структура (Спец. 3)
-
-|  | MCFTR | RUGBITR3Y | RUGBITR10Y | GLDRUB_TOM |
+| | MCFTR | RUGBITR3Y | RUGBITR10Y | GLDRUB_TOM |
 |---|---|---|---|---|
-| MCFTR | 1,00 | 0,50 | 0,54 | −0,01 |
-| RUGBITR3Y | 0,50 | 1,00 | 0,79 | −0,04 |
-| RUGBITR10Y | 0,54 | 0,79 | 1,00 | −0,13 |
-| GLDRUB_TOM | −0,01 | −0,04 | −0,13 | 1,00 |
+| MCFTR | 1.00 | 0.50 | 0.54 | −0.01 |
+| RUGBITR3Y | 0.50 | 1.00 | 0.79 | −0.04 |
+| RUGBITR10Y | 0.54 | 0.79 | 1.00 | −0.13 |
+| GLDRUB_TOM | −0.01 | −0.04 | −0.13 | 1.00 |
 
-Золото практически некоррелировано с остальными активами портфеля — это и объясняет его высокую медианную долю.
+Gold has low historical correlations with the other assets, consistent with its diversification role in this sample.
 
-## Структура репозитория
+## Repository structure
 
-```
+```text
 .
-├── main_code.ipynb                    # основной расчетный ноутбук
-├── data/                              # исходные рыночные и макроэкономические данные
-│   ├── ofz/                           # данные по ОФЗ
-│   ├── золото/                        # данные по золоту
-│   ├── индексы_акций/                 # индексы акций Московской биржи
-│   ├── индексы_облигаций/             # индексы облигаций Московской биржи
-│   └── данные для регрессии/          # рыночные и макроэкономические факторы
-├── cache/                             # кеш расчетов, создается автоматически
-├── figures/                           # графики, создаваемые ноутбуком
-├── tables/regression/                 # выгрузки регрессионных таблиц
-├── Данные_для_графиков_статьи.xlsx    # данные для итоговых графиков
-├── requirements.txt                   # зависимости Python
-├── CITATION.cff                       # метаданные для цитирования
-├── LICENSE                            # лицензия MIT
-└── README.md
+├── main_code.ipynb                    # Main research notebook
+├── data/                              # Market and macroeconomic input data
+│   ├── ofz/                           # OFZ data
+│   ├── золото/                        # Gold data
+│   ├── индексы_акций/                 # Moscow Exchange equity indices
+│   ├── индексы_облигаций/             # Moscow Exchange bond indices
+│   └── данные для регрессии/          # Market and macroeconomic factors
+├── tables/regression/                 # Exported regression results
+├── Данные_для_графиков_статьи.xlsx     # Data for article figures
+├── Данные_для_статей/                 # Additional article data exports
+├── requirements.txt                   # Pinned Python dependencies
+├── CITATION.cff                       # Citation metadata
+├── LICENSE                            # MIT licence
+├── README.md                          # English documentation
+└── README.ru.md                       # Russian documentation
 ```
 
-Ноутбук содержит собственные тесты: блоки `run_notebook_tests(...)` выполняются по ходу расчета и падают при расхождении с эталонными значениями.
+The notebook also creates `cache/` for cached calculations and `figures/` for generated charts. Some directory names, notebook comments and output labels remain in Russian; the English README does not rename data files or alter the code.
 
-## Быстрый запуск
+The notebook includes tests invoked through `run_notebook_tests(...)`. Failed tests raise an error during execution.
 
-Рекомендуемая версия — Python 3.13.
+## Getting started
+
+The documented environment uses **Python 3.13**; the notebook metadata and dependency file specify Python 3.13.9.
+
+### 1. Clone the repository and create an environment
 
 ```bash
 git clone https://github.com/levkazakov2002/master_degree_diploma_code.git
 cd master_degree_diploma_code
-
 python -m venv .venv
 ```
 
-Активация окружения в Windows PowerShell:
+Activate the environment in **Windows PowerShell**:
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-Активация окружения в Linux или macOS:
+Or in **Linux/macOS**:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Установка зависимостей и запуск:
+### 2. Install dependencies and open the notebook
 
 ```bash
 python -m pip install --upgrade pip
@@ -241,36 +269,51 @@ python -m pip install jupyterlab
 jupyter lab main_code.ipynb
 ```
 
-Ноутбук необходимо запускать из корневого каталога репозитория. Для полного пересчета следует перезапустить ядро и выполнить все ячейки последовательно сверху вниз. Кеш расчетов управляется переменной `CACHE_POLICY`; для расчета с нуля установите `CACHE_POLICY = "refresh"`.
+### 3. Run the analysis
 
-При первом запуске требуется доступ к интернету для получения отдельных показателей Банка России. Загруженные данные сохраняются в каталоге `cache`.
+Run the notebook from the repository root. Restart the kernel and execute all cells in order.
 
-## Источники данных
+Caching is controlled by `CACHE_POLICY`. To recompute cached calculations, set:
 
-- [Московская биржа](https://www.moex.com/) — индексы акций и облигаций, золото;
-- [Банк России](https://www.cbr.ru/) — бескупонная кривая доходности ОФЗ, валютные курсы, RUONIA, ключевая ставка, ставки по депозитам;
-- [Росстат](https://rosstat.gov.ru/) — макроэкономические показатели.
+```python
+CACHE_POLICY = "refresh"
+```
 
-Параметры загрузки, очистки, преобразования и синхронизации данных приведены непосредственно в ноутбуке `main_code.ipynb`.
+Internet access is required on the first run to retrieve some Bank of Russia indicators. Downloaded data are cached in `cache/`.
 
-## Что этот репозиторий не утверждает
+A full clean execution was not performed for this documentation-only update. The notebook metadata contains a recalculation-required flag; regenerate outputs before relying on the numerical results as freshly verified.
 
-- Приведенные метрики ретроспективны и не являются прогнозом доходности.
-- Регрессионные коэффициенты описывают ассоциации, а не причинные эффекты.
-- Ранжирование спецификаций между собой статистически неустойчиво (см. выше) и не выносится в качестве результата.
-- Веса портфеля оценены на полной истории, поэтому вневыборочная часть проверяет предсказуемость условно заданного портфеля, а не всю процедуру целиком.
+## Data sources
 
-## Цитирование
+- [Moscow Exchange](https://www.moex.com/): equity and bond indices, and gold.
+- [Bank of Russia](https://www.cbr.ru/): OFZ zero-coupon yield curves, exchange rates, RUONIA, the key rate and deposit rates.
+- [Rosstat](https://rosstat.gov.ru/): macroeconomic indicators.
 
-Архивная версия кода `v2.0.0`, соответствующая результатам статьи:
+Data loading, cleaning, transformation and alignment are documented in [main_code.ipynb](main_code.ipynb).
 
-<https://doi.org/10.5281/zenodo.21632648>
+## Limitations
 
-Общий DOI проекта, объединяющий все версии:
+- Historical performance is not a forecast or a promise of investment returns.
+- Regression coefficients describe associations, not causal relationships.
+- Rankings among portfolio specifications are statistically unstable.
+- Allocation ranges reflect modelling sensitivity; they are not confidence intervals.
+- Full-sample portfolio weights limit the interpretation of the pseudo-out-of-sample forecasting exercise.
+- HAC standard errors do not eliminate functional-form or structural-stability concerns.
+- Findings are specific to the assets, period and assumptions studied; they should not be automatically generalised to other markets.
 
-<https://doi.org/10.5281/zenodo.20232640>
+## Citation
 
-Релиз `v2.0.0` рекомендуется цитировать следующим образом:
+The repository identifies **v2.0.0** as the archived software version associated with the article results:
+
+- [Version-specific DOI: 10.5281/zenodo.21632648](https://doi.org/10.5281/zenodo.21632648)
+- [Concept DOI covering all versions: 10.5281/zenodo.20232640](https://doi.org/10.5281/zenodo.20232640)
+
+Use the version corresponding to the code you actually use. The current default branch may differ from the archived release.
+
+GitHub's **Cite this repository** menu uses [CITATION.cff](CITATION.cff). The original Russian bibliographic entries are retained below to preserve the author and title metadata.
+
+<details>
+<summary>BibTeX: software and master's thesis</summary>
 
 ```bibtex
 @software{kazakov2026allweather_code,
@@ -287,11 +330,7 @@ jupyter lab main_code.ipynb
                   SPIN-код: 4919-4233;
                   Science Index Author ID: 1355531}
 }
-```
 
-Для цитирования магистерской диссертации:
-
-```bibtex
 @mastersthesis{kazakov2026allweather_thesis,
   author       = {Казаков, Лев Константинович},
   title        = {Использование математических методов
@@ -304,20 +343,19 @@ jupyter lab main_code.ipynb
 }
 ```
 
-GitHub также формирует готовую ссылку из файла [`CITATION.cff`](CITATION.cff) через меню **Cite this repository**.
+</details>
 
-## Идентификаторы автора
+### Author identifiers
 
-- ORCID — [0009-0001-2203-6245](https://orcid.org/0009-0001-2203-6245)
-- Web of Science ResearcherID — `QSP-3560-2026`
-- SPIN-код РИНЦ — `4919-4233`
-- Science Index Author ID — `1355531`
+- [ORCID: 0009-0001-2203-6245](https://orcid.org/0009-0001-2203-6245)
+- Web of Science ResearcherID: `QSP-3560-2026`
+- RSCI SPIN code: `4919-4233`
+- Science Index Author ID: `1355531`
 
-## Лицензия
+## Licence
 
-Код распространяется по лицензии [MIT](LICENSE). Разрешается использование, копирование, изменение и распространение кода при условии сохранения уведомления об авторских правах.
+The code is available under the [MIT licence](LICENSE). Retain the copyright and licence notice when reusing or distributing it.
 
-## Контакты
+## Contact
 
-- Автор — Казаков Лев Константинович
-- Email — <prorab651@gmail.com>
+**Lev Kazakov** · [prorab651@gmail.com](mailto:prorab651@gmail.com)
