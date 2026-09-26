@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="460" viewBox="0 0 1000 460" role="img" aria-labelledby="title desc">
+<title id="title">Историческая максимальная просадка</title>
+<desc id="desc">Просадка спецификаций 1–4: 23.61%, 24.22%, 16.58%, 16.02%. Исторические результаты при медианных начальных весах.</desc>
+<rect width="1000" height="460" fill="white"/>
+<g font-family="Arial, sans-serif">
+<text x="40" y="48" font-size="27" font-weight="700" fill="#0f172a">Историческая максимальная просадка</text>
+<line x1="225" y1="90" x2="225" y2="330" stroke="#e2e8f0"/><text x="225" y="356" text-anchor="middle" font-size="15" fill="#475569">0</text>
+<line x1="335" y1="90" x2="335" y2="330" stroke="#e2e8f0"/><text x="335" y="356" text-anchor="middle" font-size="15" fill="#475569">5</text>
+<line x1="445" y1="90" x2="445" y2="330" stroke="#e2e8f0"/><text x="445" y="356" text-anchor="middle" font-size="15" fill="#475569">10</text>
+<line x1="555" y1="90" x2="555" y2="330" stroke="#e2e8f0"/><text x="555" y="356" text-anchor="middle" font-size="15" fill="#475569">15</text>
+<line x1="665" y1="90" x2="665" y2="330" stroke="#e2e8f0"/><text x="665" y="356" text-anchor="middle" font-size="15" fill="#475569">20</text>
+<line x1="775" y1="90" x2="775" y2="330" stroke="#e2e8f0"/><text x="775" y="356" text-anchor="middle" font-size="15" fill="#475569">25</text>
+<line x1="885" y1="90" x2="885" y2="330" stroke="#e2e8f0"/><text x="885" y="356" text-anchor="middle" font-size="15" fill="#475569">30</text>
+<text x="205" y="127" text-anchor="end" font-size="18" fill="#334155">Спецификация 1</text><rect x="225" y="105" width="519.42" height="34" rx="3" fill="#2b6c8a"/><text x="756.42" y="128" font-size="18" font-weight="700" fill="#0f172a">23.61%</text>
+<text x="205" y="185" text-anchor="end" font-size="18" fill="#334155">Спецификация 2</text><rect x="225" y="163" width="532.8399999999999" height="34" rx="3" fill="#2b6c8a"/><text x="769.8399999999999" y="186" font-size="18" font-weight="700" fill="#0f172a">24.22%</text>
+<text x="205" y="243" text-anchor="end" font-size="18" fill="#334155">Спецификация 3</text><rect x="225" y="221" width="364.76" height="34" rx="3" fill="#2b6c8a"/><text x="601.76" y="244" font-size="18" font-weight="700" fill="#0f172a">16.58%</text>
+<text x="205" y="301" text-anchor="end" font-size="18" fill="#334155">Спецификация 4</text><rect x="225" y="279" width="352.44" height="34" rx="3" fill="#2b6c8a"/><text x="589.44" y="302" font-size="18" font-weight="700" fill="#0f172a">16.02%</text>
+<text x="555" y="383" text-anchor="middle" font-size="16" fill="#334155">Максимальная просадка (%)</text>
+<text x="40" y="415" font-size="15" fill="#475569">2015–2025 • Медианные начальные веса • Buy-and-hold</text>
+<text x="40" y="440" font-size="14" fill="#475569">Ретроспективные результаты, не вневыборочный инвестиционный тест.</text>
+</g>
+</svg>

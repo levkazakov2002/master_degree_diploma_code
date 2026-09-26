@@ -1,21 +1,22 @@
 cff-version: 1.2.0
-message: "Если вы используете этот код или результаты расчетов, пожалуйста, процитируйте программное обеспечение."
+message: "If you use this software or its computational results, please cite the software as below."
 
-title: "Использование математических методов для оптимизации всепогодного портфеля"
+title: "Application of Mathematical Methods to All-Weather Portfolio Optimisation"
 type: software
 
 authors:
-  - family-names: "Казаков"
-    given-names: "Лев Константинович"
+  - family-names: "Kazakov"
+    given-names: "Lev Konstantinovich"
     orcid: "https://orcid.org/0009-0001-2203-6245"
     email: "prorab651@gmail.com"
 
 abstract: >-
-  Программный код реализует многокритериальную оптимизацию стратегической
-  структуры всепогодного портфеля на российском финансовом рынке.
-  В актуальной версии используется стратегия buy-and-hold без ребалансировки,
-  проводится сравнение нескольких конфигураций портфеля и выполняются проверки
-  устойчивости результатов.
+  Research software for multi-criteria optimisation of the strategic allocation
+  of an all-weather portfolio in the Russian financial market.
+  Version 2.0.0 uses a buy-and-hold strategy without rebalancing, compares
+  several portfolio specifications and includes robustness checks.
+  The English title is a translation of the original Russian project title:
+  "Использование математических методов для оптимизации всепогодного портфеля".
 
 version: "2.0.0"
 date-released: "2026-07-28"
@@ -25,23 +26,23 @@ doi: "10.5281/zenodo.21632648"
 identifiers:
   - type: doi
     value: "10.5281/zenodo.20232640"
-    description: "Общий Concept DOI, объединяющий все версии программного обеспечения."
+    description: "Concept DOI covering all software versions."
 
   - type: doi
     value: "10.5281/zenodo.21632648"
-    description: "DOI архивной версии 2.0.0."
+    description: "DOI of archived software version 2.0.0."
 
 repository-code: "https://github.com/levkazakov2002/master_degree_diploma_code"
 url: "https://doi.org/10.5281/zenodo.21632648"
 
 keywords:
-  - "всепогодный портфель"
-  - "многокритериальная оптимизация"
+  - "all-weather portfolio"
+  - "multi-criteria optimisation"
   - "buy-and-hold"
-  - "портфельная оптимизация"
-  - "Московская биржа"
-  - "ОФЗ"
-  - "управление риском"
-  - "эконометрика"
+  - "portfolio optimisation"
+  - "Moscow Exchange"
+  - "Russian government bonds"
+  - "risk management"
+  - "econometrics"
 
 license: MIT

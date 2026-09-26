@@ -23,7 +23,7 @@ The repository contains the code, input data and results of my master's thesis a
 
 > This is retrospective research, not an investment recommendation or a live trading system. Portfolio weights are estimated using the full historical sample, so the forecasting exercise is not an end-to-end out-of-sample test of portfolio construction.
 >
-> Numerical results below are carried over from the existing research documentation; they were not recomputed as part of this bilingual documentation update. See the notebook and exported tables for the implementation and underlying outputs.
+> The author confirms that the README results were prepared after the latest notebook run and that the computational code has not changed since that run. This documentation update does not constitute an independent rerun or numerical validation. See the notebook and exported tables for the implementation and underlying outputs.
 
 ## Research design
 
@@ -94,6 +94,10 @@ The median gold allocation exceeds the 15% reference allocation used for the ori
 CAGR is the compound annual growth rate. Maximum drawdown is shown as a positive loss magnitude.
 
 In this sample, the four-asset specifications have lower maximum drawdowns (16.0–16.6%, compared with 23.6–24.2% for the three-asset variants) and higher Calmar ratios. Their CAGR is also lower; these results do not establish universal superiority or future performance.
+
+![Historical maximum drawdown for the four portfolio specifications](docs/drawdown-summary.en.svg)
+
+*Illustration of the maximum-drawdown values in the table above; no new calculations.*
 
 ### Allocation sensitivity
 
@@ -281,7 +285,7 @@ CACHE_POLICY = "refresh"
 
 Internet access is required on the first run to retrieve some Bank of Russia indicators. Downloaded data are cached in `cache/`.
 
-A full clean execution was not performed for this documentation-only update. The notebook metadata contains a recalculation-required flag; regenerate outputs before relying on the numerical results as freshly verified.
+The notebook's execution-status metadata reflects the author's confirmation of the latest completed run. The outdated recalculation-required flags have been replaced; code cells and saved outputs are unchanged. No independent full execution was performed for this documentation update.
 
 ## Data sources
 
@@ -310,16 +314,16 @@ The repository identifies **v2.0.0** as the archived software version associated
 
 Use the version corresponding to the code you actually use. The current default branch may differ from the archived release.
 
-GitHub's **Cite this repository** menu uses [CITATION.cff](CITATION.cff). The original Russian bibliographic entries are retained below to preserve the author and title metadata.
+GitHub's **Cite this repository** menu uses the English metadata in [CITATION.cff](CITATION.cff). The English software title is a translation of the original Russian title, not a new release or a change to the DOI record. The software entry below uses the same English metadata; the thesis entry retains its original Russian bibliographic details.
 
 <details>
 <summary>BibTeX: software and master's thesis</summary>
 
 ```bibtex
 @software{kazakov2026allweather_code,
-  author       = {Казаков, Лев Константинович},
-  title        = {Использование математических методов
-                  для оптимизации всепогодного портфеля},
+  author       = {Kazakov, Lev Konstantinovich},
+  title        = {Application of Mathematical Methods to
+                  All-Weather Portfolio Optimisation},
   year         = {2026},
   publisher    = {Zenodo},
   version      = {2.0.0},
